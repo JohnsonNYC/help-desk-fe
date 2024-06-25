@@ -1,131 +1,190 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import { createTicket } from "../services/tickets.services";
+import Link from "next/link";
+import { User } from "lucide-react";
 
-export default function Home() {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+const Home = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [description, setDescription] = useState("");
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        footer img {
-          margin-left: 0.5rem;
-        }
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-decoration: none;
-          color: inherit;
-        }
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family:
-            Menlo,
-            Monaco,
-            Lucida Console,
-            Liberation Mono,
-            DejaVu Sans Mono,
-            Bitstream Vera Sans Mono,
-            Courier New,
-            monospace;
-        }
-      `}</style>
-
-      <style jsx global>{`
-        html,
-        body {
-          padding: 0;
-          margin: 0;
-          font-family:
-            -apple-system,
-            BlinkMacSystemFont,
-            Segoe UI,
-            Roboto,
-            Oxygen,
-            Ubuntu,
-            Cantarell,
-            Fira Sans,
-            Droid Sans,
-            Helvetica Neue,
-            sans-serif;
-        }
-        * {
-          box-sizing: border-box;
-        }
-      `}</style>
-    </div>
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const canSubmitBool = Boolean(
+    name.length && email.length && description.length
   );
-}
+
+  const resetState = () => {
+    setName("");
+    setEmail("");
+    setDescription("");
+    setError(null);
+    setSuccess(null);
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      name,
+      email,
+      description,
+    };
+
+    try {
+      let response = await createTicket(data);
+
+      if (response.status == 200) {
+        setSuccess("Your request has been succesfully!");
+        setTimeout(() => {
+          resetState();
+        }, 5000);
+      } else {
+        // If Error
+        setError("Please try again after a few minutes - thank you!");
+        setTimeout(() => {
+          resetState();
+        }, 5000);
+      }
+    } catch (e) {
+      setError(e);
+    }
+  };
+
+  return (
+    <Wrapper>
+      <StyledLink href="/admin">
+        <User /> Admin View
+      </StyledLink>
+      <Form onSubmit={onSubmit}>
+        <Input
+          placeholder={"Enter Name"}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+
+        <Input
+          placeholder="Enter Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <TextArea
+          placeholder="Please describe your problem and someone will get back to you shortly"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        {success ? (
+          <SuccessToken>Success!</SuccessToken>
+        ) : error ? (
+          <ErrorToken>{error}</ErrorToken>
+        ) : (
+          <Button disabled={!canSubmitBool} onClick={onSubmit}>
+            Submit
+          </Button>
+        )}
+      </Form>
+    </Wrapper>
+  );
+};
+
+export default Home;
+
+const StyledLink = styled(Link)`
+  border: 2px solid grey;
+  border-radius: 6px;
+  min-width: fit-content;
+  min-height: fit-content;
+  height: 20px;
+  padding: 5px;
+  text-decoration: none;
+  color: black;
+  display: flex;
+  align-items: center;
+`;
+
+const ErrorToken = styled.div`
+  min-width: fit-content;
+  min-height: fit-content;
+  height: 5%;
+  width: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ff0033;
+  border-radius: 10px;
+  color: white;
+  padding: 5px;
+`;
+const SuccessToken = styled.div`
+  min-width: fit-content;
+  min-height: fit-content;
+  height: 5%;
+  width: 20%;
+  background: #4bb543;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: white;
+  padding: 5px;
+`;
+
+const Button = styled.button`
+  border: 1px solid #b874e8;
+  border-radius: 6px;
+  background: #b874e8;
+  color: white;
+  min-width: fit-content;
+  min-height: fit-content;
+  width: 30%;
+  height: 8%;
+  cursor: pointer;
+
+  &:hover:enabled {
+    scale: 1.2;
+    transition: scale 100ms ease-in;
+  }
+
+  &:disabled {
+    background: #560591;
+    border: 1px solid #560591;
+  }
+`;
+
+const TextArea = styled.textarea`
+  width: 70%;
+  height: 70%;
+  resize: none;
+  padding: 10px;
+  border: 1px solid grey;
+  border-radius: 6px;
+  margin-bottom: 10px;
+`;
+const Input = styled.input`
+  border: 1px solid grey;
+  border-radius: 6px;
+
+  height: 30px;
+  width: 70%;
+
+  margin-bottom: 10px;
+  padding: 10px;
+`;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 90vh;
+  width: 50%;
+  padding: 10px;
+`;
