@@ -102,6 +102,7 @@ const StyledLink = styled(Link)`
   color: black;
   display: flex;
   align-items: center;
+  margin-top: 18px;
 `;
 
 const ErrorToken = styled.div`
@@ -161,6 +162,10 @@ const TextArea = styled.textarea`
   border: 1px solid grey;
   border-radius: 6px;
   margin-bottom: 10px;
+
+  @media screen and (max-width: 800px) {
+    height: 50%;
+  }
 `;
 const Input = styled.input`
   border: 1px solid grey;
@@ -185,6 +190,10 @@ const Form = styled.form`
   justify-content: center;
   align-items: center;
   height: 90vh;
-  width: 50%;
+  width: 60%;
   padding: 10px;
+
+  @media screen and (max-width: 800px) {
+    width: 90%;
+  }
 `;

@@ -92,6 +92,10 @@ const Wrapper = styled.div`
 
 const TicketsContainer = styled.div`
   width: 40%;
+
+  @media screen and (max-width: 800px) {
+    width: 90%;
+  }
 `;
 
 const StyledLink = styled(Link)`
