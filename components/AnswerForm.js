@@ -4,8 +4,8 @@ import { User, Mail, CircleAlert } from "lucide-react";
 const AnswerForm = ({ ticketData, handleReply }) => {
   const [updatedTicketData, setUpdatedTicketData] = useState(null);
   const [response, setResponse] = useState("");
-  const [success, setSuccess] = useState(null);
-  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
   const [successClassName, setSuccessClassName] = useState(
     "animate__fadeOutRightBig"
   );
@@ -49,10 +49,9 @@ const AnswerForm = ({ ticketData, handleReply }) => {
       setTimeout(() => {
         setError(null);
       }, 4000);
-
-      return;
+    } else {
+      onSuccess();
     }
-    handleReply(e, updatedTicketData, onSuccess);
   };
 
   useEffect(() => {

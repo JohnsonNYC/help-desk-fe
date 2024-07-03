@@ -5,6 +5,15 @@
   align-items: center;
 }
 
+.sc-home__header { 
+  font-family: Helvetica, sans-serif;
+  width: 70%; 
+  @media screen and (max-width: 800px) { 
+    font-size: 1.5em;
+    width: 90%; 
+  }
+}
+
 .sc-home-admin-button { 
   border: 2px solid grey;
   border-radius: 6px;
