@@ -70,7 +70,7 @@ const AnswerForm = ({ ticketData, handleReply }) => {
       ) : null}
 
       <div style={{ height: "30%" }}>
-        <div className="sc-answer-form__helvetica" style={{ fontSize: "32px" }}>
+        <div className="sc-answer-form__helvetica description">
           "{description}"
         </div>
         <div className="sc-answer-form__user-details">
@@ -78,18 +78,8 @@ const AnswerForm = ({ ticketData, handleReply }) => {
             <User size={16} />
           </div>
           <div>
-            <span
-              style={{ fontSize: "16px" }}
-              className="sc-answer-form__helvetica"
-            >
-              {name}
-            </span>
-            <div
-              style={{ fontSize: "14px" }}
-              className="sc-answer-form__helvetica"
-            >
-              {email}
-            </div>
+            <span className="sc-answer-form__helvetica name">{name}</span>
+            <div className="sc-answer-form__helvetica email">{email}</div>
           </div>
         </div>
       </div>
@@ -102,7 +92,7 @@ const AnswerForm = ({ ticketData, handleReply }) => {
           </div>
 
           <div className="sc-answer-form__status-selection">
-            Ticket Status:
+            Status:
             <div
               className={`sc-answer-form__pill ${
                 status == 0 ? "sc-answer-form__pill--new" : ""

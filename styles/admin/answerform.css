@@ -84,6 +84,7 @@
   border-radius: 6px;
   padding: 5px 10px;
   cursor: pointer;
+
 }
 
 .sc-answer-form__pill--new { 
@@ -113,6 +114,10 @@
   & > svg {
     margin-right: 5px;
   }
+
+  @media screen and (max-width: 840px){
+    display: none; 
+  }
 }
 
 .sc-answer-form__header { 
@@ -141,10 +146,29 @@
   &>* {
     margin: 0 5px;
   }
+
+  @media screen and (max-width: 800px){
+    font-size: 12px;
+  }
 }
 
 .sc-answer-form__helvetica {
   font-family: Helvetica, sans-serif;
+
+  &.description { 
+    font-size: 32px; 
+    @media screen and (max-width: 800px){
+      font-size: 22px; 
+    }
+  }
+
+  &.name { 
+    font-size: 16px; 
+  }
+
+  &.email { 
+    font-size: 14px; 
+  }
 }
 
 .sc-answer-form__textarea { 
