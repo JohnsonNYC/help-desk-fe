@@ -68,7 +68,7 @@ const AnswerForm = ({ ticketData, handleReply }) => {
         </div>
       ) : null}
 
-      <div style={{ height: "30%" }}>
+      <div style={{ height: "30%", overflow: "auto" }}>
         <div className="sc-answer-form__helvetica description">
           "{description}"
         </div>
