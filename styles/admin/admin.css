@@ -1,0 +1,34 @@
+.sc-admin-container { 
+height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.sc-admin-container__ticket-container { 
+  width: 40%;
+  @media screen and (max-width: 800px) {
+      width: 90%;
+  }
+}
+
+.sc-admin__submit-req { 
+  margin-bottom: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid grey;
+  border-radius: 6px;
+  padding: 5px;
+  color: grey;
+
+  &:hover {
+    scale: 1.1;
+    transition: scale 300ms ease-in;
+  }
+}
+
+.sc-admin__empty-message { 
+  font-family: monospace;
+  text-align: center;
+}

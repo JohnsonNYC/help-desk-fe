@@ -1,25 +1,58 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-
-const statusDictionary = {
-  0: { message: "New", color: "#007bff" },
-  1: { message: "Pending", color: "#fd7e14" },
-  2: { message: "Complete", color: "#28a745" },
-};
+import { User, Mail, CircleAlert } from "lucide-react";
 
 const AnswerForm = ({ ticketData, handleReply }) => {
   const [updatedTicketData, setUpdatedTicketData] = useState(null);
+  const [response, setResponse] = useState("");
+  const [success, setSuccess] = useState(null);
+  const [error, setError] = useState(null);
+  const [successClassName, setSuccessClassName] = useState(
+    "animate__fadeOutRightBig"
+  );
+
   const { name, email, description, status } = updatedTicketData || {};
 
-  const [response, setResponse] = useState("");
-
-  const clearState = () => {
+  const onSuccess = (type) => {
     setResponse("");
+    setSuccessClassName("animate__fadeInRightBig");
+
+    if (type == "status") {
+      setSuccess("Succesfully Updated Ticket Status!");
+    } else {
+      setSuccess("Succesfully Responded To This Ticket!");
+    }
+
+    setTimeout(() => {
+      setSuccessClassName(" animate__fadeOutRightBig");
+    }, 4000);
+
+    setTimeout(() => {
+      setSuccess(null);
+    }, 5000);
   };
 
-  const handleStatusChange = (newStatus) => {
-    if (status != newStatus)
-      setUpdatedTicketData({ ...ticketData, status: newStatus });
+  const handleStatusChange = (e, newStatus) => {
+    if (status == newStatus) return;
+    setUpdatedTicketData({ ...updatedTicketData, status: newStatus });
+    handleReply(
+      e,
+      { ...updatedTicketData, status: newStatus },
+      onSuccess("status")
+    );
+  };
+
+  const submitForm = (e) => {
+    e.preventDefault();
+    if (!response || !response.length) {
+      setError("Please enter your reply");
+
+      setTimeout(() => {
+        setError(null);
+      }, 4000);
+
+      return;
+    }
+    handleReply(e, updatedTicketData, onSuccess);
   };
 
   useEffect(() => {
@@ -27,116 +60,92 @@ const AnswerForm = ({ ticketData, handleReply }) => {
   }, [ticketData]);
 
   return (
-    <Wrapper>
-      <TicketDetails>
-        <div>Ticket Details</div>
-        <div>Submitted By: {name}</div>
-        <div>Email: {email}</div>
-        <div style={{ marginTop: "50px" }}>Issue Details: {description}</div>
-      </TicketDetails>
+    <div className="sc-answer-form__container">
+      {success ? (
+        <div
+          className={`sc-answer-form__success-token animate__animated ${successClassName}`}
+        >
+          {success}
+        </div>
+      ) : null}
 
-      <StatusSelection>
-        Status:
-        <Pill
-          onClick={() => handleStatusChange(0)}
-          color={status == 0 ? statusDictionary[status]["color"] : "grey"}
-        >
-          New
-        </Pill>
-        <Pill
-          onClick={() => handleStatusChange(1)}
-          color={status == 1 ? statusDictionary[status]["color"] : "grey"}
-        >
-          In Progress
-        </Pill>
-        <Pill
-          onClick={() => handleStatusChange(2)}
-          color={status == 2 ? statusDictionary[status]["color"] : "grey"}
-        >
-          Complete
-        </Pill>
-      </StatusSelection>
+      <div style={{ height: "30%" }}>
+        <div className="sc-answer-form__helvetica" style={{ fontSize: "32px" }}>
+          "{description}"
+        </div>
+        <div className="sc-answer-form__user-details">
+          <div className="sc-answer-form__round-wrapper">
+            <User size={16} />
+          </div>
+          <div>
+            <span
+              style={{ fontSize: "16px" }}
+              className="sc-answer-form__helvetica"
+            >
+              {name}
+            </span>
+            <div
+              style={{ fontSize: "14px" }}
+              className="sc-answer-form__helvetica"
+            >
+              {email}
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <TicketResponse
-        onSubmit={(e) => handleReply(e, updatedTicketData, clearState)}
-      >
-        Email To: <Input>{email}</Input>
-        <TextArea
+      <div style={{ height: "50%" }} onSubmit={(e) => submitForm(e)}>
+        <div className="sc-answer-form__header">
+          <div className="sc-answer-form__input">
+            <Mail size={20} />
+            {email}
+          </div>
+
+          <div className="sc-answer-form__status-selection">
+            Ticket Status:
+            <div
+              className={`sc-answer-form__pill ${
+                status == 0 ? "sc-answer-form__pill--new" : ""
+              }`}
+              onClick={(e) => handleStatusChange(e, 0)}
+            >
+              New
+            </div>
+            <div
+              className={`sc-answer-form__pill ${
+                status == 1 ? "sc-answer-form__pill--in-progress" : ""
+              }`}
+              onClick={(e) => handleStatusChange(e, 1)}
+            >
+              In Progress
+            </div>
+            <div
+              className={`sc-answer-form__pill ${
+                status == 2 ? "sc-answer-form__pill--complete" : ""
+              }`}
+              onClick={(e) => handleStatusChange(e, 2)}
+            >
+              Complete
+            </div>
+          </div>
+        </div>
+        <textarea
           placeholder={`Reply to ${name}`}
           value={response}
           onChange={(e) => setResponse(e.target.value)}
+          className="sc-answer-form__textarea"
         />
-        <Button onClick={(e) => handleReply(e, updatedTicketData, clearState)}>
+        {error ? (
+          <div className="sc-answer-form__error-token">
+            <CircleAlert /> {error}
+          </div>
+        ) : null}
+        <button className="sc-answer-form_btn" onClick={(e) => submitForm(e)}>
           Submit
-        </Button>
-      </TicketResponse>
-    </Wrapper>
+        </button>
+      </div>
+    </div>
   );
 };
 
 export default AnswerForm;
-
-const Pill = styled.div`
-  border: 1px solid ${(props) => props.color};
-  color: ${(props) => props.color};
-  border-radius: 6px;
-  padding: 5px 10px;
-
-  cursor: pointer;
-`;
-const StatusSelection = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-
-  & > * {
-    margin: 0 5px;
-  }
-`;
-const Button = styled.button`
-  border: 1px solid #b874e8;
-  border-radius: 6px;
-  background: #b874e8;
-  color: white;
-  min-width: fit-content;
-  min-height: fit-content;
-  width: 30%;
-  height: 10%;
-  cursor: pointer;
-  display: block;
-  margin: 0 auto;
-
-  &:hover:enabled {
-    scale: 1.2;
-    transition: scale 100ms ease-in;
-  }
-
-  &:disabled {
-    background: #560591;
-    border: 1px solid #560591;
-  }
-`;
-const Input = styled.div`
-  border: 1px solid grey;
-  border-radius: 6px;
-  height: 20px;
-  width: fit-content;
-  padding: 5px;
-  display: inline-block;
-`;
-const TicketResponse = styled.form`
-  height: 50%;
-`;
-const TicketDetails = styled.div`
-  height: 30%;
-`;
-const TextArea = styled.textarea`
-  width: 90%;
-  height: 50%;
-  resize: none;
-  margin-top: 10px;
-  padding: 10px;
-`;
-const Wrapper = styled.div`
-  height: 100%;
-`;

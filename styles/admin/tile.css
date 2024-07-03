@@ -1,0 +1,56 @@
+.sc-tile__container { 
+  border: 1px solid grey;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  min-height: 40px;
+  padding: 10px;
+  position: relative;
+  cursor: pointer;
+
+  &>div {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:nth-child(2) {
+      margin-top: 20px;
+    }
+  }
+
+  &:hover {
+    box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, 0.2);
+    transform: translate(10px, 0);
+    transition: transform 200ms ease-in;
+  }
+}
+
+.sc-tile__title { 
+  font-weight: 600;
+  font-family:monospace;
+  display: inline-block;
+}
+
+.sc-title__status { 
+  font-family: monospace;
+  border-radius: 6px;
+  width: fit-content;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 5px;
+}
+
+.sc-title__status--new{
+border: 1px solid #007bff;
+color: #007bff;
+}
+
+.sc-title__status--in-progress{
+  border: 1px solid #fd7e14;
+  color: #fd7e14;
+}
+
+.sc-title__status--complete{
+  border: 1px solid #28a745;
+  color: #28a745;
+}

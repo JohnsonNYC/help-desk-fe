@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Tile from "../../components/Tile";
 import AnswerForm from "../../components/AnswerForm";
 import Modal from "../../components/Modal";
-import styled from "styled-components";
 
 import {
   getAllTickets,
@@ -15,6 +14,12 @@ const AdminPage = () => {
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const TICKETS = useMemo(() => {
+    return tickets.sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }, [tickets]);
 
   const fetchTickets = async () => {
     const response = await getAllTickets();
@@ -28,14 +33,12 @@ const AdminPage = () => {
     setSelectedTicket(null);
   };
 
-  const handleReply = async (e, ticketData, callback) => {
+  const handleReply = async (e, ticketData, onSuccess) => {
     e.preventDefault();
-    const { name } = ticketData || {};
     let res = await updateTicketStatus(ticketData);
     if (res.status == 200) {
-      callback();
+      if (typeof onSuccess == "function") onSuccess();
       fetchTickets();
-      window.alert(`We will send ${name} an email with their updated ticket!`);
     }
   };
 
@@ -48,11 +51,13 @@ const AdminPage = () => {
   }, [selectedTicket]);
 
   return (
-    <Wrapper>
-      <StyledLink href="/">Submit A Request</StyledLink>
-      <TicketsContainer>
-        {tickets && tickets.length ? (
-          tickets.map((ticket) => {
+    <div className="sc-admin-container">
+      <Link href="/" className="sc-admin__submit-req">
+        Submit A Request
+      </Link>
+      <div className="sc-admin-container__ticket-container">
+        {TICKETS && TICKETS.length ? (
+          TICKETS.map((ticket) => {
             return (
               <Tile
                 key={ticket.ticket_id}
@@ -62,53 +67,18 @@ const AdminPage = () => {
             );
           })
         ) : (
-          <EmptyMessage>
+          <div className="sc-admin__empty-message">
             There are no tickets yet - head on over to the submit form using the
             button above to create a ticket!
-          </EmptyMessage>
+          </div>
         )}
-      </TicketsContainer>
+      </div>
 
       <Modal isOpen={isModalOpen} handleClose={closeModal}>
         <AnswerForm ticketData={selectedTicket} handleReply={handleReply} />
       </Modal>
-    </Wrapper>
+    </div>
   );
 };
 
 export default AdminPage;
-
-const EmptyMessage = styled.div`
-  font-family: monospace;
-  text-align: center;
-`;
-const Wrapper = styled.div`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-`;
-
-const TicketsContainer = styled.div`
-  width: 40%;
-
-  @media screen and (max-width: 800px) {
-    width: 90%;
-  }
-`;
-
-const StyledLink = styled(Link)`
-  margin-bottom: 20px;
-  text-decoration: none;
-  cursor: pointer;
-  border: 1px solid grey;
-  border-radius: 6px;
-  padding: 5px;
-  color: grey;
-
-  &:hover {
-    scale: 1.1;
-    transition: scale 300ms ease-in;
-  }
-`;
