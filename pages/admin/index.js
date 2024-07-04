@@ -9,8 +9,8 @@ import {
   updateTicketStatus,
 } from "../../services/tickets.services";
 
-const AdminPage = () => {
-  const [tickets, setTickets] = useState([]);
+const AdminPage = ({ ticketsData }) => {
+  const [tickets, setTickets] = useState(ticketsData);
   const [selectedTicket, setSelectedTicket] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,10 +41,6 @@ const AdminPage = () => {
       fetchTickets();
     }
   };
-
-  useEffect(() => {
-    fetchTickets();
-  }, []);
 
   useEffect(() => {
     setIsModalOpen(Boolean(selectedTicket));
@@ -82,3 +78,8 @@ const AdminPage = () => {
 };
 
 export default AdminPage;
+
+export async function getServerSideProps() {
+  const res = await getAllTickets();
+  return { props: { ticketsData: res.tickets } };
+}
